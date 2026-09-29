@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { MongoClient, ServerApiVersion, ObjectId } from "mongodb";
 import passport from "passport";
 import { Strategy as GitHubStrategy } from "passport-github2";
+import { Strategy as LocalStrategy } from "passport-local";
 import session from "express-session";
 
 dotenv.config();
@@ -13,11 +14,11 @@ const app = express();
 // DB init
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    }
 })
 let collection = null
 let users = null
@@ -33,6 +34,7 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/auth/github',
 passport.authenticate('github', { scope: [ 'user:email' ] }));
@@ -41,6 +43,31 @@ app.get('/auth/github/callback',
 passport.authenticate('github', { failureRedirect: '/' }),
 function(req, res) {
     res.redirect('/');
+});
+
+app.post('/auth/local',
+
+    function(req, res, next) {
+        console.log("POST /auth/local");
+        console.log("Body:", req.body);
+        next();
+    },
+
+    passport.authenticate('local', { failureRedirect: '/' }),
+
+    function(req, res) {
+        console.log("Authenticating local user");
+        console.log("User:", req.user);
+
+        res.redirect('/');
+    }
+);
+
+app.get('/auth/logout', function(req, res, next){
+    req.logout(function(err) {
+        if (err) { return next(err); }
+        res.redirect('/');
+    });
 });
 
 passport.serializeUser(function(user, done) {
@@ -53,6 +80,30 @@ passport.deserializeUser(async function(obj, done) {
     console.log(`Deserializing: ${obj} --> ${JSON.stringify(user)}`)
     done(null, user);
 });
+
+passport.use(new LocalStrategy(
+  async function(username, password, done) {
+    // create user obj
+    let user_obj = { username: username }
+    
+    const user = await users.findOne(user_obj)
+    console.log(`Searching for local user: ${JSON.stringify(user_obj)}`)
+
+    // if user doesn't exist, create it
+    if (!user) {
+        user_obj.password = password
+        await users.insertOne( user_obj )
+        return done(null, user_obj);
+    }
+
+    // User exists, but password is wrong
+    if (user.password !== password) {
+        return done(null, false);
+    }
+
+    return done(null, user);
+  }
+));
 
 passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENTID,

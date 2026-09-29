@@ -1,10 +1,13 @@
 
 function Home() {
   return (
-    <Methods />
+    <>
+      <Methods />
+      <LocalForm />
+    </>
+
     );
 }
-
 
 function Methods() {
   return (
@@ -20,19 +23,13 @@ function LocalForm() {
 
   return (
     <div>
-    <h2>Portfolio Designer</h2>
-    <h3>Log in</h3>
-    <form onSubmit={handleLogin}>
-        <label>Username</label>
-        <br/>
-        <input type="text" id="uname-login" name="user-uname"></input>
-        <br/>
-        <label>Password</label>
-        <br/>
-        <input type="password" id="pword-login" name="user-pword"></input>
-        <br/>
-        <button type="submit" id="login-submit">Log in</button>
-    </form>
+      <h2>Portfolio Designer</h2>
+      <h3>Log in</h3>
+        <form action="/auth/local" method="post">
+          <input name="username" required />
+          <input name="password" type="password" required />
+          <button type="submit">Sign in</button>
+        </form>
     </div>
   );
 }
