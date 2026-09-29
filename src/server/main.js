@@ -10,6 +10,21 @@ dotenv.config();
 
 const app = express();
 
+// DB init
+const uri = process.env.MONGODB_URI;
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+})
+let collection = null
+let users = null
+
+openDB();
+
+// Auth init
 app.use(session({ 
     secret: process.env.PASSPORT_SECRET, 
     resave: false, 
@@ -29,12 +44,13 @@ function(req, res) {
 });
 
 passport.serializeUser(function(user, done) {
-    done(null, user.id);
+    console.log(`Serializing: ${JSON.stringify(user)}`)
+    done(null, user._id);
 });
 
 passport.deserializeUser(async function(obj, done) {
-    const user = await users.findOne({ id: obj })
-    // console.log(`Deserializing: ${obj} --> ${JSON.stringify(user)}`)
+    const user = await users.findOne({ _id: new ObjectId(obj) })
+    console.log(`Deserializing: ${obj} --> ${JSON.stringify(user)}`)
     done(null, user);
 });
 
@@ -45,8 +61,8 @@ passport.use(new GitHubStrategy({
 },
 async function(accessToken, refreshToken, profile, done) {
     // console.log(JSON.stringify(profile))
-    let user_obj = {id: profile.id, username: profile.username}
-    const user = await users.findOne({ id: profile.id })
+    let user_obj = {username: profile.username, githubID: profile.id}
+    const user = await users.findOne({ githubID: user_obj.githubID })
 
     if (!user) {
         await users.insertOne( user_obj )
@@ -56,7 +72,24 @@ async function(accessToken, refreshToken, profile, done) {
 }
 ));
 
-
 ViteExpress.listen(app, 3000, () =>
   console.log("Server is listening on port 3000..."),
 );
+
+
+async function openDB() {
+    await client.connect();
+    // collection = client.db("todo").collection("items");
+    users = client.db("portfolio_maker").collection("users");
+    console.log("Connected to DB");
+}
+
+function ensureAuthenticated(req, res, next) {
+    console.log("Ensuring auth", req.isAuthenticated());
+
+    if (req.isAuthenticated()) {
+        return next();
+    }
+
+    return res.status(401).send("Unauthorized");
+}
