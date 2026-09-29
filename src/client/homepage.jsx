@@ -35,7 +35,7 @@ const handleSignup = (e) => {
             <br></br>
             <input id="pwordLogin" type="password" name="userPword"></input>
             <br></br>
-            <button type="submit" id="loginSubmit">Log in</button>
+            <button type="submit" id="loginSubmit">Sign Up</button>
         </form>
         </div>
         );
