@@ -116,9 +116,10 @@ async function(accessToken, refreshToken, profile, done) {
     const user = await users.findOne({ githubID: user_obj.githubID })
 
     if (!user) {
-        await users.insertOne( user_obj )
+        user = await users.insertOne( user_obj )
     }
-
+    
+    user_obj._id = user._id
     done(null, user_obj)
 }
 ));

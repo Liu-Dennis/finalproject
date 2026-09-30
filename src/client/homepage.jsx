@@ -1,18 +1,17 @@
 
 function Home() {
   return (
-    <>
-      <Methods />
+    <main className="form-signin w-100 m-auto">
       <LocalForm />
-    </>
-
-    );
+      <Methods />
+    </main>
+  );
 }
 
 function Methods() {
   return (
     <div>
-      <a href="/auth/github">
+      <a className="btn btn-primary" href="/auth/github">
         <button>Log in with GitHub</button>
       </a>
     </div>
@@ -22,15 +21,17 @@ function Methods() {
 function LocalForm() {
 
   return (
-    <div>
-      <h2>Portfolio Designer</h2>
-      <h3>Log in</h3>
-        <form action="/auth/local" method="post">
-          <input name="username" required />
-          <input name="password" type="password" required />
-          <button type="submit">Sign in</button>
-        </form>
-    </div>
+    <form action="/auth/local" method="post">
+      <div className="form-group mb-3">
+        <label htmlFor="username">Username</label>
+        <input className="form-control"name="username" required />
+      </div>
+      <div className="form-group mb-3">
+        <label htmlFor="password">Password</label>
+        <input className="form-control" name="password" type="password" required />
+      </div>
+      <button className="btn btn-primary" type="submit">Sign in</button>
+    </form>
   );
 }
 
