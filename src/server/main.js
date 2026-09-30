@@ -7,6 +7,7 @@ import { Strategy as GitHubStrategy } from "passport-github2";
 import { Strategy as LocalStrategy } from "passport-local";
 import session from "express-session";
 
+dotenv.config();
 
 const app = express();
 
