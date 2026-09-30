@@ -26,6 +26,7 @@ let users = null
 openDB();
 
 // Auth init
+const redirect_url = "http://localhost:3000/pfolio/"
 app.use(session({ 
     secret: process.env.PASSPORT_SECRET, 
     resave: false, 
@@ -42,7 +43,7 @@ passport.authenticate('github', { scope: [ 'user:email' ] }));
 app.get('/auth/github/callback', 
 passport.authenticate('github', { failureRedirect: '/' }),
 function(req, res) {
-    res.redirect('/');
+    res.redirect(redirect_url + req.user._id);
 });
 
 app.post('/auth/local',
@@ -59,7 +60,7 @@ app.post('/auth/local',
         console.log("Authenticating local user");
         console.log("User:", req.user);
 
-        res.redirect('/');
+        res.redirect(redirect_url + req.user._id);
     }
 );
 
@@ -123,6 +124,8 @@ async function(accessToken, refreshToken, profile, done) {
     done(null, user_obj)
 }
 ));
+
+
 
 ViteExpress.listen(app, 3000, () =>
   console.log("Server is listening on port 3000..."),
