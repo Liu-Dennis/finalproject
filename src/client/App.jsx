@@ -1,8 +1,8 @@
 import { useState } from "react";
-// import "./App.css";
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Home from "./homepage.jsx";
 import UserPortfolio from "./portfolio.jsx";
+import MainNavBar from "./navbar.jsx";
 function App() {
 
 

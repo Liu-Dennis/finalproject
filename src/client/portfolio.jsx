@@ -2,9 +2,10 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import WidgetDisplay from "./widgetDisplay.jsx";
+import "./portfolio.css"
+import PFolioNavBar from './navbar.jsx';
 
 function UserPortfolio(){
-    //need some way to check auth here, if auth and user is correct then display admin edit panel
 
     const { uid } = useParams(); 
     const [data, setData] = useState([])
@@ -29,8 +30,15 @@ function UserPortfolio(){
 
     return (
         <>
-            <div>{uid}</div>
-            <WidgetDisplay widgets={data} />
+            <PFolioNavBar uid={uid}></PFolioNavBar>
+            <div className='columnContainer'>
+                <div className='infoEditContainer'></div>
+                <div className='postContainer'>
+                    <div>{uid}</div>
+                    <WidgetDisplay widgets={data} />
+                </div>
+            </div>
+            
         </>
     );
 }
