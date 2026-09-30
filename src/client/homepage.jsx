@@ -1,9 +1,13 @@
 
 function Home() {
   return (
-    <main className="form-signin w-100 m-auto">
-      <LocalForm />
-      <Methods />
+    <main className="container min-vh-100 d-flex align-items-center justify-content-center">
+      <div className="card p-4 shadow" style={{ maxWidth: "400px", width: "100%" }}>
+        <h1 className="h3 mb-4 text-center">Portfolio Designer</h1>
+          <LocalForm />
+          <br className="mb-5"/>
+          <Methods />
+      </div>
     </main>
   );
 }
@@ -11,8 +15,8 @@ function Home() {
 function Methods() {
   return (
     <div>
-      <a className="btn btn-primary" href="/auth/github">
-        <button>Log in with GitHub</button>
+      <a href="/auth/github">
+        <button className="flex-grow-1 btn btn-primary" style={{ width: "100%" }}>Log in with GitHub</button>
       </a>
     </div>
   );
@@ -30,7 +34,7 @@ function LocalForm() {
         <label htmlFor="password">Password</label>
         <input className="form-control" name="password" type="password" required />
       </div>
-      <button className="btn btn-primary" type="submit">Sign in</button>
+      <button className="flex-grow-1 btn btn-primary" type="submit">Sign in</button>
     </form>
   );
 }
