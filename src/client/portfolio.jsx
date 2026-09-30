@@ -29,7 +29,7 @@ function UserPortfolio(){
     return (
         <>
             <div>{uid}</div>
-            <WidgetDisplay widgets={data} />
+            {/* <WidgetDisplay widgets={data} /> */}
         </>
     );
 }
