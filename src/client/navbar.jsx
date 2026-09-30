@@ -34,7 +34,7 @@ function PFolioNavBar() {
         <>
         <Navbar bg="primary" data-bs-theme="dark">
             <Container>
-                <Navbar.Brand >Home</Navbar.Brand> {/* this should be a link that goes to /pfolio/uid of current user */}
+                <Navbar.Brand >User</Navbar.Brand> 
                 {username !== "" ? <Navbar.Brand>Logged in as {username}</Navbar.Brand> : <Navbar.Brand>Not Logged In</Navbar.Brand>}
                 <Button onClick={handleLogOut}>Log Out</Button>
             </Container>
