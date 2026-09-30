@@ -125,7 +125,9 @@ async function(accessToken, refreshToken, profile, done) {
 }
 ));
 
-
+app.get('/user/username', ensureAuthenticated, function(req, res) {
+  res.json(req.user.username);
+});
 
 ViteExpress.listen(app, 3000, () =>
   console.log("Server is listening on port 3000..."),
@@ -137,7 +139,7 @@ async function openDB() {
     // collection = client.db("todo").collection("items");
     users = client.db("portfolio_maker").collection("users");
     console.log("Connected to DB");
-}
+};
 
 function ensureAuthenticated(req, res, next) {
     console.log("Ensuring auth", req.isAuthenticated());
