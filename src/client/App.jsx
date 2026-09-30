@@ -9,7 +9,6 @@ function App() {
   return (
     <BrowserRouter>
     <div className="App">
-      
       <Routes>
         <Route path="/" element={<Home/>} />
         <Route path="/pfolio/:username" element={<UserPortfolio/>}> </Route>
