@@ -1,9 +1,10 @@
 
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from "react";
-import WidgetDisplay from "./widgetDisplay.jsx";
+import WidgetDisplay from "./pfolioComponents/widgetDisplay.jsx";
 import "./portfolio.css"
-import PFolioNavBar from './navbar.jsx';
+import PFolioNavBar from './pfolioComponents/navbar.jsx';
+import UserInfo from './pfolioComponents/userInfo.jsx';
 
 function UserPortfolio(){
 
@@ -32,10 +33,13 @@ function UserPortfolio(){
         <>
             <PFolioNavBar uid={uid}></PFolioNavBar>
             <div className='columnContainer'>
-                <div className='infoEditContainer'></div>
+                <div className='infoEditContainer'>
+                <UserInfo img="./assets/stockPhotoGuy.png" txt="Hello this is a bio"></UserInfo>
+                </div>
                 <div className='postContainer'>
-                    <div>{uid}</div>
-                    <WidgetDisplay widgets={data} />
+
+                    {/* <div>{uid}</div>
+                    <WidgetDisplay widgets={data} /> */}
                 </div>
             </div>
             

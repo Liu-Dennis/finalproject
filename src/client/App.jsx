@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Home from "./homepage.jsx";
 import UserPortfolio from "./portfolio.jsx";
-import MainNavBar from "./navbar.jsx";
+import MainNavBar from "./pfolioComponents/navbar.jsx";
 function App() {
 
 
