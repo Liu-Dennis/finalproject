@@ -115,7 +115,7 @@ passport.use(new GitHubStrategy({
 async function(accessToken, refreshToken, profile, done) {
     // console.log(JSON.stringify(profile))
     let user_obj = {username: profile.username, githubID: profile.id}
-    const user = await users.findOne({ githubID: user_obj.githubID })
+    let user = await users.findOne({ githubID: user_obj.githubID })
 
     if (!user) {
         user = await users.insertOne( user_obj )
