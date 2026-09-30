@@ -29,14 +29,17 @@ function PFolioNavBar() {
             window.location.href = response.url
         }
     }
+    const handleLogInRedirect = (e) => {
+        window.location.href = '/'
+    }
 
     return (
         <>
         <Navbar bg="primary" data-bs-theme="dark">
             <Container>
-                <Navbar.Brand >User</Navbar.Brand> 
                 {username !== "" ? <Navbar.Brand>Logged in as {username}</Navbar.Brand> : <Navbar.Brand>Not Logged In</Navbar.Brand>}
-                <Button onClick={handleLogOut}>Log Out</Button>
+                {/* <Button onClick={handleLogOut}>Log Out</Button> */}
+                {username !== "" ? <Button onClick={handleLogOut}>Log Out</Button> : <Button onClick={handleLogInRedirect}>Log In</Button>}
             </Container>
         </Navbar>
         </>
