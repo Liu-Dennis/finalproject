@@ -6,7 +6,7 @@ function WidgetDisplay( {widgets} ){
 
     return (
         <>
-            <div>Widget Display</div>
+            <p>Widgets: {JSON.stringify(widgets)}</p>
         </>
     );
 }

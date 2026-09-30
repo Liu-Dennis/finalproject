@@ -22,6 +22,7 @@ const client = new MongoClient(uri, {
 })
 let collection = null
 let users = null
+let widgets = null
 
 openDB();
 
@@ -129,6 +130,15 @@ app.get('/user/username', ensureAuthenticated, function(req, res) {
   res.json(req.user.username);
 });
 
+app.post('/user/widgets', express.json(), async (req, res) => {
+    console.log(`Post Received: ${JSON.stringify( req.body )}`)
+
+    if (widgets !== null) {
+        const docs = await widgets.find({_id: new ObjectId("6abc36b3651066defb89b1ca")}).toArray()
+        res.json( docs )
+    }
+})
+
 ViteExpress.listen(app, 3000, () =>
   console.log("Server is listening on port 3000..."),
 );
@@ -138,6 +148,7 @@ async function openDB() {
     await client.connect();
     // collection = client.db("todo").collection("items");
     users = client.db("portfolio_maker").collection("users");
+    widgets = client.db("portfolio_maker").collection("widgets");
     console.log("Connected to DB");
 };
 
