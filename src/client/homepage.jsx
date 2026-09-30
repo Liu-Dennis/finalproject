@@ -1,44 +1,42 @@
 
 function Home() {
+  return (
+    <main className="container min-vh-100 d-flex align-items-center justify-content-center">
+      <div className="card p-4 shadow" style={{ maxWidth: "400px", width: "100%" }}>
+        <h1 className="h3 mb-4 text-center">Portfolio Designer</h1>
+          <LocalForm />
+          <br className="mb-5"/>
+          <Methods />
+      </div>
+    </main>
+  );
+}
 
-const handleLogin = (e) => {
-  e.preventDefault();
-  console.log("Form submitted")
+function Methods() {
+  return (
+    <div>
+      <a href="/auth/github">
+        <button className="flex-grow-1 btn btn-primary" style={{ width: "100%" }}>Log in with GitHub</button>
+      </a>
+    </div>
+  );
 }
-const handleSignup = (e) => {
-  e.preventDefault();
-  console.log("Form submitted")
+
+function LocalForm() {
+
+  return (
+    <form action="/auth/local" method="post">
+      <div className="form-group mb-3">
+        <label htmlFor="username">Username</label>
+        <input className="form-control"name="username" required />
+      </div>
+      <div className="form-group mb-3">
+        <label htmlFor="password">Password</label>
+        <input className="form-control" name="password" type="password" required />
+      </div>
+      <button className="flex-grow-1 btn btn-primary" type="submit">Sign in</button>
+    </form>
+  );
 }
-    return (
-        <div>
-        <h2>Portfolio Designer</h2>
-        <h3>Log in</h3>
-        <form onSubmit={handleLogin}>
-            <label>Username</label>
-            <br></br>
-            <input type="text" id="unameLogin" name="userUname"></input>
-            <br></br>
-            <label>Password</label>
-            <br></br>
-            <input id="pwordLogin" type="password" name="userPword"></input>
-            <br></br>
-            <button type="submit" id="loginSubmit">Log in</button>
-        </form>
-        <hr></hr>
-        <h3>Sign Up</h3>
-        <form onSubmit={handleSignup}>
-            <label>Username</label>
-            <br></br>
-            <input type="text" id="unameSignup" name="userUname"></input>
-            <br></br>
-            <label>Password</label>
-            <br></br>
-            <input id="pwordLogin" type="password" name="userPword"></input>
-            <br></br>
-            <button type="submit" id="loginSubmit">Sign Up</button>
-        </form>
-        </div>
-        );
-    
-}
+
 export default Home;
