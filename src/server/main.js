@@ -6,6 +6,7 @@ import passport from "passport";
 import { Strategy as GitHubStrategy } from "passport-github2";
 import { Strategy as LocalStrategy } from "passport-local";
 import session from "express-session";
+import registerPortfolioRoutes from "./portfolioRoutes.js";
 
 dotenv.config();
 
@@ -23,7 +24,6 @@ const client = new MongoClient(uri, {
 let collection = null
 let users = null
 let widgets = null
-let posts = null
 
 openDB();
 
@@ -38,7 +38,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
 app.get('/auth/github',
 passport.authenticate('github', { scope: [ 'user:email' ] }));
@@ -120,13 +119,12 @@ async function(accessToken, refreshToken, profile, done) {
     let user = await users.findOne({ githubID: user_obj.githubID })
 
     if (!user) {
-        // insertOne returns { insertedId }, not the document itself
+        // insertOne returns { insertedId }, not the new user
         const result = await users.insertOne( user_obj )
-        user_obj._id = result.insertedId
-    } else {
-        user_obj._id = user._id
+        user = { _id: result.insertedId }
     }
-
+    
+    user_obj._id = user._id
     done(null, user_obj)
 }
 ));
@@ -144,115 +142,7 @@ app.post('/user/widgets', express.json(), async (req, res) => {
     }
 })
 
-// ---------------------------------------------------------------------------
-// Portfolio API
-//
-// Ownership rule: the server NEVER trusts the client about who owns what.
-//   - Reads are public (anyone can view a portfolio).
-//   - Every write uses req.user._id from the session, and every post query is
-//     scoped with { owner: req.user._id }, so a user can only touch their own
-//     posts even if they hand-craft a request with someone else's post id.
-//   - isOwner is sent to the client only so it knows whether to show the edit
-//     sidebar. Hiding/showing UI is cosmetic; the checks below are the security.
-// ---------------------------------------------------------------------------
-
-// Who is logged in right now? (null if nobody). Never send the password back.
-app.get('/api/me', (req, res) => {
-    if (!req.isAuthenticated() || !req.user) return res.json(null);
-    res.json({ _id: req.user._id.toString(), username: req.user.username });
-});
-
-// Public: view a portfolio. Includes isOwner so the client can show edit tools.
-app.get('/api/portfolio/:uid', async (req, res) => {
-    const { uid } = req.params;
-    if (!ObjectId.isValid(uid)) {
-        return res.status(404).json({ error: "Portfolio not found" });
-    }
-
-    const owner = await users.findOne(
-        { _id: new ObjectId(uid) },
-        { projection: { password: 0 } }
-    );
-    if (!owner) {
-        return res.status(404).json({ error: "Portfolio not found" });
-    }
-
-    const ownerPosts = await posts
-        .find({ owner: owner._id })
-        .sort({ createdAt: -1 })
-        .toArray();
-
-    res.json({
-        profile: {
-            _id: owner._id.toString(),
-            username: owner.username,
-            bio: owner.bio ?? "",
-            avatarUrl: owner.avatarUrl ?? "",
-        },
-        posts: ownerPosts,
-        isOwner: isOwner(req, uid),
-    });
-});
-
-// Owner only: update your own profile (bio / avatar). No uid in the URL on
-// purpose -- you can only ever edit the profile of the logged in user.
-app.put('/api/profile', ensureAuthenticated, async (req, res) => {
-    const update = {
-        bio: cleanString(req.body.bio, 1000),
-        avatarUrl: cleanString(req.body.avatarUrl, 2000),
-    };
-    await users.updateOne({ _id: req.user._id }, { $set: update });
-    res.json(update);
-});
-
-// Owner only: create a post on your own portfolio.
-app.post('/api/posts', ensureAuthenticated, async (req, res) => {
-    const fields = readPostFields(req.body);
-    if (!fields.title) {
-        return res.status(400).json({ error: "Title is required" });
-    }
-
-    const post = { ...fields, owner: req.user._id, createdAt: new Date() };
-    const result = await posts.insertOne(post);
-    res.status(201).json({ ...post, _id: result.insertedId });
-});
-
-// Owner only: edit one of your posts.
-app.put('/api/posts/:id', ensureAuthenticated, async (req, res) => {
-    if (!ObjectId.isValid(req.params.id)) {
-        return res.status(404).json({ error: "Post not found" });
-    }
-    const fields = readPostFields(req.body);
-    if (!fields.title) {
-        return res.status(400).json({ error: "Title is required" });
-    }
-
-    // owner in the filter = can't edit someone else's post
-    const updated = await posts.findOneAndUpdate(
-        { _id: new ObjectId(req.params.id), owner: req.user._id },
-        { $set: { ...fields, updatedAt: new Date() } },
-        { returnDocument: "after" }
-    );
-    if (!updated) {
-        return res.status(404).json({ error: "Post not found" });
-    }
-    res.json(updated);
-});
-
-// Owner only: delete one of your posts.
-app.delete('/api/posts/:id', ensureAuthenticated, async (req, res) => {
-    if (!ObjectId.isValid(req.params.id)) {
-        return res.status(404).json({ error: "Post not found" });
-    }
-    const result = await posts.deleteOne({
-        _id: new ObjectId(req.params.id),
-        owner: req.user._id,
-    });
-    if (result.deletedCount === 0) {
-        return res.status(404).json({ error: "Post not found" });
-    }
-    res.status(204).end();
-});
+registerPortfolioRoutes(app, client, ensureAuthenticated);
 
 ViteExpress.listen(app, 3000, () =>
   console.log("Server is listening on port 3000..."),
@@ -264,7 +154,6 @@ async function openDB() {
     // collection = client.db("todo").collection("items");
     users = client.db("portfolio_maker").collection("users");
     widgets = client.db("portfolio_maker").collection("widgets");
-    posts = client.db("portfolio_maker").collection("posts");
     console.log("Connected to DB");
 };
 
@@ -275,25 +164,5 @@ function ensureAuthenticated(req, res, next) {
         return next();
     }
 
-    return res.status(401).json({ error: "You need to be logged in" });
-}
-
-
-// true if the logged in user is the owner of portfolio `uid`
-function isOwner(req, uid) {
-    return req.isAuthenticated() && !!req.user && req.user._id.toString() === uid;
-}
-
-function cleanString(value, maxLength) {
-    return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
-}
-
-// Only copy the fields we allow -- never spread req.body straight into the DB,
-// or a client could overwrite `owner` and steal/plant posts.
-function readPostFields(body = {}) {
-    return {
-        title: cleanString(body.title, 200),
-        description: cleanString(body.description, 5000),
-        imageUrl: cleanString(body.imageUrl, 2000),
-    };
+    return res.status(401).send("Unauthorized");
 }
