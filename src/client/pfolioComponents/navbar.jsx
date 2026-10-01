@@ -1,21 +1,19 @@
 import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { useState, useEffect } from "react";
-import { NavbarBrand, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 
 function PFolioNavBar() {
-    const [username, setUsername] = useState("")
+    // { _id, username } of the logged in user, or null if logged out
+    const [me, setMe] = useState(null)
 
     useEffect(() => {
-        // GET request using fetch inside useEffect React hook
-        fetch('/user/username')
+        fetch('/api/me')
             .then(response => response.json())
-            .then(data => setUsername(data));
-
-    // empty dependency array means this effect will only run once (like componentDidMount in classes)
+            .then(data => setMe(data))
+            .catch(() => setMe(null));
     }, []);
 
     const handleLogOut = async (e) => {
@@ -37,9 +35,11 @@ function PFolioNavBar() {
         <>
         <Navbar bg="primary" data-bs-theme="dark">
             <Container>
-                {username !== "" ? <Navbar.Brand>Logged in as {username}</Navbar.Brand> : <Navbar.Brand>Not Logged In</Navbar.Brand>}
-                {/* <Button onClick={handleLogOut}>Log Out</Button> */}
-                {username !== "" ? <Button onClick={handleLogOut}>Log Out</Button> : <Button onClick={handleLogInRedirect}>Log In</Button>}
+                {me ? <Navbar.Brand>Logged in as {me.username}</Navbar.Brand> : <Navbar.Brand>Not Logged In</Navbar.Brand>}
+                <div className="d-flex gap-2">
+                    {me && <Button as={Link} to={`/pfolio/${me._id}`}>My portfolio</Button>}
+                    {me ? <Button onClick={handleLogOut}>Log Out</Button> : <Button onClick={handleLogInRedirect}>Log In</Button>}
+                </div>
             </Container>
         </Navbar>
         </>
