@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
+import "./editTools.css";
 
 const EMPTY = { title: "", description: "", imageUrl: "" };
 

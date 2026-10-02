@@ -1,7 +1,7 @@
 import { Card, Button } from 'react-bootstrap';
+import "./editTools.css";
 
-// widget2 from the mockup: the artist's posts.
-// `editable` only controls whether Edit/Delete buttons render.
+// Grid of the artist's posts. `editable` only controls whether Edit/Delete render.
 function PostGrid({ posts, editable, emptyMessage, onEdit, onDelete }) {
     if (posts.length === 0) {
         return <p className="text-muted mb-0">{emptyMessage}</p>;
@@ -10,7 +10,7 @@ function PostGrid({ posts, editable, emptyMessage, onEdit, onDelete }) {
     return (
         <div className="postGrid">
             {posts.map(post => (
-                <Card key={post._id} className="postCard">
+                <Card key={post._id}>
                     {post.imageUrl && (
                         <Card.Img variant="top" src={post.imageUrl} alt={post.title} className="postCardImg" />
                     )}
