@@ -93,6 +93,7 @@ function readPostFields(body = {}) {
     return {
         title: cleanString(body.title, 200),
         description: cleanString(body.description, 5000),
-        imageUrl: cleanString(body.imageUrl, 2000),
+        imageUrl: cleanString(body.imageUrl, 2000), 
+        priority: cleanString(body.priority, 200)
     };
 }

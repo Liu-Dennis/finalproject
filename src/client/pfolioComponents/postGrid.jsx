@@ -6,10 +6,11 @@ function PostGrid({ posts, editable, emptyMessage, onEdit, onDelete }) {
     if (posts.length === 0) {
         return <p className="text-muted mb-0">{emptyMessage}</p>;
     }
-
+    //sort array by priority variable in descending order
+    posts.sort((a, b) => parseInt(b.priority, 10) - parseInt(a.priority, 10));
     return (
         <div className="postGrid">
-            {posts.map(post => (
+            {posts.map(post => ( 
                 <Card key={post._id}>
                     {post.imageUrl && (
                         <Card.Img variant="top" src={post.imageUrl} alt={post.title} className="postCardImg" />

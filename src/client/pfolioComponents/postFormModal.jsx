@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import "./editTools.css";
 
-const EMPTY = { title: "", description: "", imageUrl: "" };
+const EMPTY = { title: "", description: "", imageUrl: "", priority: 0 };
 
 // Shared create/edit form. Pass `post` to edit, null to create.
 function PostFormModal({ show, post, onHide, onSave }) {
@@ -14,7 +14,7 @@ function PostFormModal({ show, post, onHide, onSave }) {
     useEffect(() => {
         if (show) {
             setFields(post
-                ? { title: post.title ?? "", description: post.description ?? "", imageUrl: post.imageUrl ?? "" }
+                ? { title: post.title ?? "", description: post.description ?? "", imageUrl: post.imageUrl ?? "", priority: post.priority ?? "" } 
                 : EMPTY);
             setError(null);
         }
@@ -53,6 +53,10 @@ function PostFormModal({ show, post, onHide, onSave }) {
                     {fields.imageUrl && (
                         <img src={fields.imageUrl} alt="Preview" className="postFormPreview mb-3" />
                     )}
+                    <Form.Group className="mb-3" controlId="post-priority">
+                        <Form.Label>Priority (Higher Priority First)</Form.Label>
+                        <Form.Control required maxLength={200} type="number" min="0" step="1" value={fields.priority !== "" ? fields.priority : "0"} onChange={update("priority")} autoFocus/>
+                    </Form.Group>
                     <Form.Group controlId="post-description">
                         <Form.Label>Description</Form.Label>
                         <Form.Control as="textarea" rows={4} maxLength={5000} value={fields.description} onChange={update("description")} />
