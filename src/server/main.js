@@ -7,6 +7,7 @@ import { Strategy as GitHubStrategy } from "passport-github2";
 import { Strategy as LocalStrategy } from "passport-local";
 import session from "express-session";
 import registerPortfolioRoutes from "./portfolioRoutes.js";
+import registerUserFileRoutes from "./userFileRoutes.js";
 
 dotenv.config();
 
@@ -143,6 +144,7 @@ app.post('/user/widgets', express.json(), async (req, res) => {
 })
 
 registerPortfolioRoutes(app, client, ensureAuthenticated);
+registerUserFileRoutes(app, client, ensureAuthenticated);
 
 ViteExpress.listen(app, 3000, () =>
   console.log("Server is listening on port 3000..."),
