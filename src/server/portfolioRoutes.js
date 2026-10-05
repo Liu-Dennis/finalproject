@@ -11,12 +11,22 @@ import { ObjectId } from "mongodb";
 //   - isOwner is sent to the client only to decide whether to show edit tools.
 export default function registerPortfolioRoutes(app, client, ensureAuthenticated) {
     const posts = client.db("portfolio_maker").collection("posts");
+    const users = client.db("portfolio_maker").collection("users");
     const json = express.json();
 
-    // Public: a user's posts + whether the viewer owns this portfolio
+    // Public: a user's profile + posts + whether the viewer owns this portfolio
     app.get('/api/portfolio/:uid', async (req, res) => {
         const { uid } = req.params;
         if (!ObjectId.isValid(uid)) {
+            return res.status(404).json({ error: "Portfolio not found" });
+        }
+
+        // never send the password (or anything else private) to the browser
+        const owner = await users.findOne(
+            { _id: new ObjectId(uid) },
+            { projection: { username: 1, bio: 1, avatarUrl: 1 } }
+        );
+        if (!owner) {
             return res.status(404).json({ error: "Portfolio not found" });
         }
 
@@ -25,7 +35,30 @@ export default function registerPortfolioRoutes(app, client, ensureAuthenticated
             .sort({ createdAt: -1 })
             .toArray();
 
-        res.json({ posts: ownerPosts, isOwner: isOwner(req, uid) });
+        res.json({
+            profile: {
+                username: owner.username,
+                bio: owner.bio ?? "",
+                avatarUrl: owner.avatarUrl ?? "",
+            },
+            posts: ownerPosts,
+            isOwner: isOwner(req, uid),
+        });
+    });
+
+    // Owner only: edit your own profile (bio + profile picture).
+    // No uid in the URL on purpose -- it always updates the logged in user.
+    app.put('/api/profile', ensureAuthenticated, json, async (req, res) => {
+        const update = {
+            bio: cleanString(req.body.bio, 1000),
+            avatarUrl: cleanString(req.body.avatarUrl, 2000),
+        };
+        if (update.avatarUrl && !/^https?:\/\//i.test(update.avatarUrl)) {
+            return res.status(400).json({ error: "Profile picture must be an http(s) link" });
+        }
+
+        await users.updateOne({ _id: req.user._id }, { $set: update });
+        res.json(update);
     });
 
     // Owner only: create a post on your own portfolio

@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { api } from "../api.js";
 
-// Loads a portfolio's posts + whether the logged in user owns it,
-// and exposes the owner actions (create / edit / delete).
+// Loads a portfolio's profile + posts + whether the logged in user owns it,
+// and exposes the owner actions (create / edit / delete posts, edit profile).
 export default function usePortfolio(uid) {
     const [posts, setPosts] = useState([]);
+    // { username, bio, avatarUrl } of the portfolio being viewed
+    const [profile, setProfile] = useState(null);
     // From the server, which compares the session user to uid. Only decides
     // which UI to show -- the server re-checks ownership on every edit.
     const [isOwner, setIsOwner] = useState(false);
@@ -15,6 +17,7 @@ export default function usePortfolio(uid) {
         api("GET", `/api/portfolio/${uid}`)
             .then(data => {
                 setPosts(data.posts);
+                setProfile(data.profile);
                 setIsOwner(data.isOwner);
             })
             .catch(err => console.error("Failed to load portfolio:", err));
@@ -41,5 +44,11 @@ export default function usePortfolio(uid) {
         }
     };
 
-    return { posts, isOwner, editMode, setEditMode, savePost, deletePost };
+    // fields = { bio, avatarUrl }. Throws on failure so the form can show the error.
+    const saveProfile = async (fields) => {
+        const saved = await api("PUT", "/api/profile", fields);
+        setProfile(prev => ({ ...prev, ...saved }));
+    };
+
+    return { posts, profile, isOwner, editMode, setEditMode, savePost, deletePost, saveProfile };
 }

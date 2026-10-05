@@ -9,12 +9,13 @@ import usePortfolio from './pfolioComponents/usePortfolio.js';
 import EditSidebar from './pfolioComponents/editSidebar.jsx';
 import PostGrid from './pfolioComponents/postGrid.jsx';
 import PostFormModal from './pfolioComponents/postFormModal.jsx';
+import defaultPfp from './assets/stockPhotoGuy.png';
 
 function UserPortfolio(){
 
     const { uid } = useParams(); 
     const [data, setData] = useState([])
-    const { posts, isOwner, editMode, setEditMode, savePost, deletePost } = usePortfolio(uid)
+    const { posts, profile, isOwner, editMode, setEditMode, savePost, deletePost, saveProfile } = usePortfolio(uid)
     // null = closed, { post: null } = creating, { post } = editing that post
     const [modal, setModal] = useState(null)
 
@@ -41,13 +42,15 @@ function UserPortfolio(){
             <PFolioNavBar uid={uid}></PFolioNavBar>
             <div className='columnContainer'>
                 <div className='infoEditContainer'>
-                <UserInfo img="./assets/stockPhotoGuy.png" txt="Hello this is a bio"></UserInfo>
+                <UserInfo img={profile?.avatarUrl || defaultPfp} txt={profile?.bio || "No bio yet."}></UserInfo>
                 {isOwner && (
                     <EditSidebar
                         postCount={posts.length}
                         editMode={editMode}
                         onToggleEditMode={() => setEditMode(m => !m)}
                         onNewPost={() => setModal({ post: null })}
+                        profile={profile}
+                        onSaveProfile={saveProfile}
                     />
                 )}
                 </div>
