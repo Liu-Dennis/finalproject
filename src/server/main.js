@@ -6,6 +6,7 @@ import passport from "passport";
 import { Strategy as GitHubStrategy } from "passport-github2";
 import { Strategy as LocalStrategy } from "passport-local";
 import session from "express-session";
+import registerPortfolioRoutes from "./portfolioRoutes.js";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ const client = new MongoClient(uri, {
 })
 let collection = null
 let users = null
+let widgets = null
 
 openDB();
 
@@ -114,10 +116,12 @@ passport.use(new GitHubStrategy({
 async function(accessToken, refreshToken, profile, done) {
     // console.log(JSON.stringify(profile))
     let user_obj = {username: profile.username, githubID: profile.id}
-    const user = await users.findOne({ githubID: user_obj.githubID })
+    let user = await users.findOne({ githubID: user_obj.githubID })
 
     if (!user) {
-        user = await users.insertOne( user_obj )
+        // insertOne returns { insertedId }, not the new user
+        const result = await users.insertOne( user_obj )
+        user = { _id: result.insertedId }
     }
     
     user_obj._id = user._id
@@ -129,6 +133,17 @@ app.get('/user/username', ensureAuthenticated, function(req, res) {
   res.json(req.user.username);
 });
 
+app.post('/user/widgets', express.json(), async (req, res) => {
+    console.log(`Post Received: ${JSON.stringify( req.body )}`)
+
+    if (widgets !== null) {
+        const docs = await widgets.find({_id: new ObjectId("6abc36b3651066defb89b1ca")}).toArray()
+        res.json( docs )
+    }
+})
+
+registerPortfolioRoutes(app, client, ensureAuthenticated);
+
 ViteExpress.listen(app, 3000, () =>
   console.log("Server is listening on port 3000..."),
 );
@@ -138,6 +153,7 @@ async function openDB() {
     await client.connect();
     // collection = client.db("todo").collection("items");
     users = client.db("portfolio_maker").collection("users");
+    widgets = client.db("portfolio_maker").collection("widgets");
     console.log("Connected to DB");
 };
 
