@@ -13,7 +13,7 @@ export default function registerUserFileRoutes(app, client, ensureAuthenticated)
     const files = client.db("portfolio_maker").collection("files");
     const json = express.json();
 
-    express.static(UPLOAD_DIR);
+    app.use("/uploads", express.static(UPLOAD_DIR));
 
     app.get('/api/files/:uid', ensureAuthenticated, async (req, res) => {
         const { uid } = req.params;

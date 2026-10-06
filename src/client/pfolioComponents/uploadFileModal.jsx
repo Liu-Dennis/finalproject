@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import "./editTools.css";
+import "./uploadFileModal.css";
 
 function UploadFileModal({ show, onHide, uid }) {
     const [data, setData] = useState([])
+    const [redraw, setRedraw] = useState(0)
 
     // on load, fetch the data with the id passed in the url
     useEffect(() => {
@@ -12,7 +14,7 @@ function UploadFileModal({ show, onHide, uid }) {
         .then(data => {
             setData(data.ownerFiles);
         });
-    }, [show]);
+    }, [show, redraw]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -31,8 +33,11 @@ function UploadFileModal({ show, onHide, uid }) {
             if (response.ok) {
                 // const result = await response.json();
                 // console.log("Files uploaded successfully:", result);
-                onHide(); 
+                // onHide(); 
+                setRedraw(redraw + 1);
+                e.target.reset();
             }
+
 
 
         } catch (err) {
@@ -90,17 +95,19 @@ function UploadFileModal({ show, onHide, uid }) {
                             autoFocus 
                         />
                     </Form.Group>
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">File Name</th>
-                                <th scope="col">Controls</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {file_rows}
-                        </tbody>
-                    </table>
+                    <div className="scrollable-box">
+                        {data.length > 0 && (<table className="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">File Name</th>
+                                    <th scope="col">Controls</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {file_rows}
+                            </tbody>
+                        </table>)}
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={onHide}> Close </Button>
