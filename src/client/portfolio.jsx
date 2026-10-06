@@ -10,14 +10,16 @@ import EditSidebar from './pfolioComponents/editSidebar.jsx';
 import PostGrid from './pfolioComponents/postGrid.jsx';
 import PostFormModal from './pfolioComponents/postFormModal.jsx';
 import defaultPfp from './assets/stockPhotoGuy.png';
+import FileUpload from './pfolioComponents/fileUpload.jsx';
+import UploadFileModal from './pfolioComponents/uploadFileModal.jsx';
 
 function UserPortfolio(){
-
     const { uid } = useParams(); 
     const [data, setData] = useState([])
     const { posts, profile, isOwner, editMode, setEditMode, savePost, deletePost, saveProfile } = usePortfolio(uid)
     // null = closed, { post: null } = creating, { post } = editing that post
     const [modal, setModal] = useState(null)
+    const [fileModal, setFileModal] = useState(false)
 
     // on load, fetch the data with the id passed in the url
     useEffect(() => {
@@ -53,6 +55,7 @@ function UserPortfolio(){
                         onSaveProfile={saveProfile}
                     />
                 )}
+                {isOwner && (<FileUpload onOpen={() => setFileModal(true)} />)}
                 </div>
                 <div className='postContainer'>
                     <PostGrid
@@ -75,6 +78,9 @@ function UserPortfolio(){
                     onSave={async (fields) => { await savePost(modal?.post, fields); setModal(null); }}
                 />
             )}
+
+            {isOwner && (<UploadFileModal show={fileModal} onHide={() => setFileModal(false)} uid={uid} />)}
+            
             
         </>
     );
