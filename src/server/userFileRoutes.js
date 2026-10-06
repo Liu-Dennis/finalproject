@@ -31,7 +31,7 @@ export default function registerUserFileRoutes(app, client, ensureAuthenticated)
     });
 
     app.post('/api/files', ensureAuthenticated, upload.array("files"), async (req, res) => {
-        console.log(req.files);
+        //console.log("req.files is " + req.files);
 
         for (const file of req.files) {
             await files.insertOne({

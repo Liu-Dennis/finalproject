@@ -5,9 +5,9 @@ import "./editTools.css";
 function FileUpload({ onOpen }) {
     return (
         <aside className="editSidebar">
-            <h2 className="h5">Upload Files</h2>
+            <h2 className="h5">Portfolio Files</h2>
             <Button className="w-100" onClick={onOpen}>
-                🖹 Upload Images
+                🖹 Manage Images
             </Button>
         </aside>
     );

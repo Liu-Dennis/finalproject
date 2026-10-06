@@ -5,10 +5,11 @@ import "./editTools.css";
 const EMPTY = { title: "", description: "", imageUrl: "", priority: 0 };
 
 // Shared create/edit form. Pass `post` to edit, null to create.
-function PostFormModal({ show, post, onHide, onSave }) {
+function PostFormModal({ show, post, onHide, onSave, uid }) {
     const [fields, setFields] = useState(EMPTY);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
+    const [data, setData] = useState([])
 
     // reset the form every time it opens
     useEffect(() => {
@@ -17,6 +18,13 @@ function PostFormModal({ show, post, onHide, onSave }) {
                 ? { title: post.title ?? "", description: post.description ?? "", imageUrl: post.imageUrl ?? "", priority: post.priority ?? "" } 
                 : EMPTY);
             setError(null);
+            //this was running but not giving me the files in a way that could be read
+            // fetch(`/api/files/${uid}`) 
+            // .then(response => response.json())
+            // .then(data => {
+            // setData(data.ownerFiles);
+            // });
+            // console.log("User Files Are: " + data)
         }
     }, [show, post]);
 
@@ -35,6 +43,35 @@ function PostFormModal({ show, post, onHide, onSave }) {
         }
     };
 
+    const handlePostFile = async (e) => {
+        e.preventDefault()
+        const formData = new FormData(e.currentTarget);
+        const currentUrl = window.location.origin
+        try {
+            const response = await fetch("/api/files", {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                //console.log("Files uploaded successfully:", result);
+                setFields({
+                    ...fields,
+                    imageUrl: `${currentUrl}/uploads/filenameGoesHere` 
+                    //I do not yet have a good way to get the filename from the image that was just uploaded
+                    
+                })
+            }
+
+
+
+        } catch (err) {
+            console.log(err.message);
+        } 
+
+    }
+
     return (
         <Modal show={show} onHide={onHide} centered>
             <Form onSubmit={handleSubmit}>
@@ -46,6 +83,21 @@ function PostFormModal({ show, post, onHide, onSave }) {
                         <Form.Label>Title</Form.Label>
                         <Form.Control required maxLength={200} value={fields.title} onChange={update("title")} autoFocus />
                     </Form.Group>
+                    <Form.Group className="mb-3" controlId="post-file" >
+                        <Form.Label>File Upload</Form.Label>
+                        <form onChange={handlePostFile}> {/* this nested form structure is cursed but it was the only way I found to get 
+                                                            the file info in a way that the server side could use, 
+                                                            a better way to do this would be great */}
+                            <Form.Control 
+                            type="file"
+                            name="files" 
+                            accept="image/png, image/jpeg"   
+                            required
+                            autoFocus>
+                            </Form.Control>
+                        </form>
+                    </Form.Group>
+                    
                     <Form.Group className="mb-3" controlId="post-image">
                         <Form.Label>Image URL</Form.Label>
                         <Form.Control type="url" placeholder="https://..." value={fields.imageUrl} onChange={update("imageUrl")} />

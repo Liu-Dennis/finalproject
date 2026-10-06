@@ -18,7 +18,7 @@ function UploadFileModal({ show, onHide, uid }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         const formData = new FormData(e.target);
         const files = formData.getAll("files");
         
@@ -84,7 +84,7 @@ function UploadFileModal({ show, onHide, uid }) {
                     <Modal.Title>My Files</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form.Group className="mb-3" controlId="post-title">
+                    {/* <Form.Group className="mb-3" controlId="post-title">
                         <Form.Label>Select File(s)</Form.Label>
                         <Form.Control 
                             type="file"
@@ -94,7 +94,7 @@ function UploadFileModal({ show, onHide, uid }) {
                             required
                             autoFocus 
                         />
-                    </Form.Group>
+                    </Form.Group> */}
                     <div className="scrollable-box">
                         {data.length > 0 && (<table className="table">
                             <thead>
@@ -111,9 +111,9 @@ function UploadFileModal({ show, onHide, uid }) {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={onHide}> Close </Button>
-                    <Button type="submit">
+                    {/* <Button type="submit">
                         Upload File
-                    </Button>
+                    </Button> */}
                 </Modal.Footer>
             </form>
         </Modal>
