@@ -30,12 +30,43 @@ function ProfileEditor({ profile, onSave }) {
             setSaving(false);
         }
     };
+    const handlePostFile = async (e) => {
+        e.preventDefault()
+         e.preventDefault()
+        const file = e.target.files[0]
+        const formData = new FormData();
+        formData.append("files", file)
+        const currentUrl = window.location.origin
+        try {
+            const response = await fetch("/api/files", {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log("Files uploaded successfully:", result.uploads);
+                const cleanResult = result.uploads.replace(/[\[\]"]/g, '');
+                setAvatarUrl(`${currentUrl}` + `${cleanResult}`)
+            }
+        } catch (err) {
+            console.log(err.message);
+        } 
+    }
 
     return (
         <Form onSubmit={handleSubmit} className="editSidebarSection">
             <h3 className="h6">Profile</h3>
 
             <Form.Group className="mb-2" controlId="profile-avatar">
+                <Form.Control 
+                    type="file"
+                    name="files" 
+                    accept="image/png, image/jpeg"   
+                    required
+                    autoFocus
+                    onChange={handlePostFile}>
+                </Form.Control>
                 <Form.Label>Profile picture URL</Form.Label>
                 <Form.Control
                     type="url"
