@@ -55,10 +55,11 @@ function PostFormModal({ show, post, onHide, onSave, uid }) {
 
             if (response.ok) {
                 const result = await response.json();
-                //console.log("Files uploaded successfully:", result);
+                console.log("Files uploaded successfully:", result.uploads);
+                const cleanResult = result.uploads.replace(/[\[\]"]/g, '');
                 setFields({
                     ...fields,
-                    imageUrl: `${currentUrl}/uploads/filenameGoesHere` 
+                    imageUrl: `${currentUrl}` + `${cleanResult}`
                     //I do not yet have a good way to get the filename from the image that was just uploaded
                     
                 })
