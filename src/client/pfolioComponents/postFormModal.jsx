@@ -39,7 +39,9 @@ function PostFormModal({ show, post, onHide, onSave, uid }) {
 
     const handlePostFile = async (e) => {
         e.preventDefault()
-        const formData = new FormData(e.currentTarget);
+        const file = e.target.files[0]
+        const formData = new FormData();
+        formData.append("files", file)
         const currentUrl = window.location.origin
         try {
             const response = await fetch("/api/files", {
@@ -80,7 +82,7 @@ function PostFormModal({ show, post, onHide, onSave, uid }) {
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="post-file" >
                         <Form.Label>File Upload</Form.Label>
-                        <form onChange={handlePostFile}> {/* this nested form structure is cursed but it was the only way I found to get 
+                         {/* this nested form structure is cursed but it was the only way I found to get 
                                                             the file info in a way that the server side could use, 
                                                             a better way to do this would be great */}
                             <Form.Control 
@@ -88,9 +90,11 @@ function PostFormModal({ show, post, onHide, onSave, uid }) {
                             name="files" 
                             accept="image/png, image/jpeg"   
                             required
-                            autoFocus>
+                            autoFocus
+                            onChange={handlePostFile}
+                            >
                             </Form.Control>
-                        </form>
+                        
                     </Form.Group>
                     
                     <Form.Group className="mb-3" controlId="post-image">
