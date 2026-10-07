@@ -31,7 +31,9 @@ export default function registerUserFileRoutes(app, client, ensureAuthenticated)
     });
 
     app.post('/api/files', ensureAuthenticated, upload.array("files"), async (req, res) => {
+        //console.log("req.files is " + req.files);
         console.log(req.files);
+        let links = [];
 
         for (const file of req.files) {
             await files.insertOne({
@@ -42,9 +44,11 @@ export default function registerUserFileRoutes(app, client, ensureAuthenticated)
                 size: file.size,
                 uploadedOn: new Date()
             });
+
+            links.push(`/uploads/${file.filename}`);
         }
 
-        res.status(201).json({ success: true });
+        res.status(201).json({"uploads": JSON.stringify(links)});
     });
 
     app.delete('/api/files/:fileId', ensureAuthenticated, async (req, res) => {

@@ -72,6 +72,7 @@ function UserPortfolio(){
             </div>
             {isOwner && (
                 <PostFormModal
+                    uid={uid}
                     show={modal !== null}
                     post={modal?.post ?? null}
                     onHide={() => setModal(null)}
