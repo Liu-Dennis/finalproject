@@ -18,13 +18,7 @@ function PostFormModal({ show, post, onHide, onSave, uid }) {
                 ? { title: post.title ?? "", description: post.description ?? "", imageUrl: post.imageUrl ?? "", priority: post.priority ?? "" } 
                 : EMPTY);
             setError(null);
-            //this was running but not giving me the files in a way that could be read
-            // fetch(`/api/files/${uid}`) 
-            // .then(response => response.json())
-            // .then(data => {
-            // setData(data.ownerFiles);
-            // });
-            // console.log("User Files Are: " + data)
+
         }
     }, [show, post]);
 
@@ -60,7 +54,7 @@ function PostFormModal({ show, post, onHide, onSave, uid }) {
                 setFields({
                     ...fields,
                     imageUrl: `${currentUrl}` + `${cleanResult}`
-                    //I do not yet have a good way to get the filename from the image that was just uploaded
+                    
                     
                 })
             }
