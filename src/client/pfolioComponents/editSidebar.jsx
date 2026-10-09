@@ -26,7 +26,7 @@ function EditSidebar({ postCount, editMode, onToggleEditMode, onNewPost, profile
                     {profile && <ProfileEditor profile={profile} onSave={onSaveProfile} />}
                 </>
             )}
-        </aside>
+        </aside>    
     );
 }
 export default EditSidebar;
