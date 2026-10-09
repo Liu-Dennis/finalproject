@@ -29,7 +29,7 @@ let widgets = null
 openDB();
 
 // Auth init
-const redirect_url = "http://localhost:3000/pfolio/"
+const redirect_url = "https://portfolio-maker-le6y.onrender.com/pfolio/"
 app.use(session({ 
     secret: process.env.PASSPORT_SECRET, 
     resave: false, 
@@ -112,7 +112,7 @@ passport.use(new LocalStrategy(
 passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENTID,
     clientSecret: process.env.GITHUB_CLIENTSECRET,
-    callbackURL: "hhttps://portfolio-maker-le6y.onrender.com/auth/github/callback"
+    callbackURL: "https://portfolio-maker-le6y.onrender.com/auth/github/callback"
 },
 async function(accessToken, refreshToken, profile, done) {
     // console.log(JSON.stringify(profile))
