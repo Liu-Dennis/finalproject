@@ -71,4 +71,29 @@ export default function registerUserFileRoutes(app, client, ensureAuthenticated)
         res.status(204).send();
 
     });
+
+    
+    app.get("/api/files/quota/:uid", ensureAuthenticated, async (req, res) => {
+        const { uid } = req.params;
+
+        if (uid !== req.user._id.toString()) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+
+        const ownerFiles = await files
+            .find({ owner: new ObjectId(uid) })
+            .toArray();
+
+        let totalSize = 0;
+
+        for (const file of ownerFiles) {
+            totalSize += file.size;
+        }
+
+        res.status(200).json({
+            usedBytes: totalSize,
+            allocatedBytes: 100 * 1024 * 1024, // 100 mb
+            fileCount: ownerFiles.length
+        });
+    });
 }
