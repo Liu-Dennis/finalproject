@@ -63,7 +63,6 @@ function ProfileEditor({ profile, onSave }) {
                     type="file"
                     name="files" 
                     accept="image/png, image/jpeg"   
-                    required
                     autoFocus
                     onChange={handlePostFile}>
                 </Form.Control>
