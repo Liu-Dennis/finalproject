@@ -9,9 +9,27 @@ const upload = multer({
     dest: UPLOAD_DIR
 });
 
+
+
 export default function registerUserFileRoutes(app, client, ensureAuthenticated) {
     const files = client.db("portfolio_maker").collection("files");
     const json = express.json();
+
+    const checkQuota = async (files, uid) => {
+        const quota = 1 * 1024 * 1024 // mb conv
+
+        const ownerFiles = await files
+            .find({ owner: new ObjectId(uid) })
+            .toArray();
+
+        let totalSize = 0;
+
+        for (const file of ownerFiles) {
+            totalSize += file.size;
+        }
+
+        return { totalSize, fileCount: ownerFiles.length, allocatedBytes: quota };
+    };
 
     app.use("/uploads", express.static(UPLOAD_DIR));
 
@@ -34,6 +52,13 @@ export default function registerUserFileRoutes(app, client, ensureAuthenticated)
         //console.log("req.files is " + req.files);
         console.log(req.files);
         let links = [];
+
+
+        const { totalSize, fileCount, allocatedBytes } = await checkQuota(files, req.user._id);
+
+        if (totalSize > allocatedBytes) {
+            res.status(403).json({ error: "Storage quota exceeded" });
+        }
 
         for (const file of req.files) {
             await files.insertOne({
@@ -80,20 +105,12 @@ export default function registerUserFileRoutes(app, client, ensureAuthenticated)
             return res.status(401).json({ error: "Unauthorized" });
         }
 
-        const ownerFiles = await files
-            .find({ owner: new ObjectId(uid) })
-            .toArray();
-
-        let totalSize = 0;
-
-        for (const file of ownerFiles) {
-            totalSize += file.size;
-        }
+        const { totalSize, fileCount, allocatedBytes } = await checkQuota(files, uid);
 
         res.status(200).json({
             usedBytes: totalSize,
-            allocatedBytes: 100 * 1024 * 1024, // 100 mb
-            fileCount: ownerFiles.length
+            allocatedBytes,
+            fileCount
         });
     });
 }

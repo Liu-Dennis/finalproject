@@ -66,7 +66,9 @@ function UploadFileModal({ show, onHide, uid }) {
 
             if (response.ok) {
                 setData(data => data.filter(entry => entry._id !== fileId));
+                setRedraw(redraw + 1);
             }
+            
 
         } catch (err) {
             console.log(err.message);
