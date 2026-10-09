@@ -12,6 +12,7 @@ import PostFormModal from './pfolioComponents/postFormModal.jsx';
 import defaultPfp from './assets/stockPhotoGuy.png';
 import FileUpload from './pfolioComponents/fileUpload.jsx';
 import UploadFileModal from './pfolioComponents/uploadFileModal.jsx';
+import PostDetailModal from './pfolioComponents/postDetailModal.jsx';
 
 function UserPortfolio(){
     const { uid } = useParams(); 
@@ -20,6 +21,7 @@ function UserPortfolio(){
     // null = closed, { post: null } = creating, { post } = editing that post
     const [modal, setModal] = useState(null)
     const [fileModal, setFileModal] = useState(false)
+    const [viewing, setViewing] = useState(null)
 
     // on load, fetch the data with the id passed in the url
     useEffect(() => {
@@ -64,6 +66,7 @@ function UserPortfolio(){
                         emptyMessage={isOwner ? 'No posts yet. Use "+ New post" to add your first piece.' : 'No work posted yet.'}
                         onEdit={(post) => setModal({ post })}
                         onDelete={deletePost}
+                        onOpen={(post) => setViewing(post)}
                     />
 
                     {/* <div>{uid}</div>
@@ -81,6 +84,7 @@ function UserPortfolio(){
             )}
 
             {isOwner && (<UploadFileModal show={fileModal} onHide={() => setFileModal(false)} uid={uid} />)}
+            <PostDetailModal post={viewing} onHide={() => setViewing(null)} />
             
             
         </>
