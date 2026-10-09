@@ -89,7 +89,7 @@ function PostFormModal({ show, post, onHide, onSave, uid }) {
                             type="file"
                             name="files" 
                             accept="image/png, image/jpeg"   
-                            required
+                            
                             autoFocus
                             onChange={handlePostFile}
                             >
