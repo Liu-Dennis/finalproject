@@ -112,7 +112,7 @@ passport.use(new LocalStrategy(
 passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENTID,
     clientSecret: process.env.GITHUB_CLIENTSECRET,
-    callbackURL: "http://localhost:3000/auth/github/callback"
+    callbackURL: "hhttps://portfolio-maker-le6y.onrender.com/auth/github/callback"
 },
 async function(accessToken, refreshToken, profile, done) {
     // console.log(JSON.stringify(profile))
