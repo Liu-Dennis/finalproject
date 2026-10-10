@@ -1,15 +1,11 @@
-import { Button, Form } from 'react-bootstrap';
-import "./editTools.css";
+import { Button } from 'react-bootstrap';
 
-// Owner-only edit panel. Only rendered when the server says you own this page.
+// Owner-only "Manage images" button in the profile banner's button column.
 function FileUpload({ onOpen }) {
     return (
-        <aside className="editSidebar">
-            <h2 className="h5">Portfolio Files</h2>
-            <Button className="w-100" onClick={onOpen}>
-                🖹 Manage Images
-            </Button>
-        </aside>
+        <Button variant="outline-secondary" onClick={onOpen}>
+            🖹 Manage images
+        </Button>
     );
 }
 export default FileUpload;

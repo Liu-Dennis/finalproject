@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Button, Form, Alert } from 'react-bootstrap';
 import "./editTools.css";
 
-// Profile section of the edit sidebar: profile picture + bio.
-function ProfileEditor({ profile, onSave }) {
+// Edit-mode version of the profile banner: profile picture + bio
+function ProfileEditor({ profile, username, defaultPfp, onSave }) {
     const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl);
     const [bio, setBio] = useState(profile.bio);
     const [saving, setSaving] = useState(false);
@@ -55,44 +55,54 @@ function ProfileEditor({ profile, onSave }) {
     }
 
     return (
-        <Form onSubmit={handleSubmit} className="editSidebarSection">
-            <h3 className="h6">Profile</h3>
-
-            <Form.Group className="mb-2" controlId="profile-avatar">
-                <Form.Control 
+        <>
+        {/* the avatar doubles as the preview; click it to upload a new picture */}
+        <div className="avatarWrap">
+            <img src={avatarUrl || defaultPfp} alt="Profile picture preview" className="avatar" />
+            <label className="avatarChange">
+                Change photo
+                <input
                     type="file"
-                    name="files" 
-                    accept="image/png, image/jpeg"   
-                    autoFocus
-                    onChange={handlePostFile}>
-                </Form.Control>
-                <Form.Label>Profile picture URL</Form.Label>
-                <Form.Control
-                    type="url"
-                    placeholder="https://..."
-                    value={avatarUrl}
-                    onChange={e => setAvatarUrl(e.target.value)}
+                    name="files"
+                    accept="image/png, image/jpeg"
+                    hidden
+                    onChange={handlePostFile}
                 />
-            </Form.Group>
-            {avatarUrl && <img src={avatarUrl} alt="Profile picture preview" className="profilePreview mb-2" />}
+            </label>
+        </div>
 
-            <Form.Group className="mb-2" controlId="profile-bio">
-                <Form.Label>Bio</Form.Label>
+        <Form onSubmit={handleSubmit} className="profileText">
+            <h1 className="profileName">{username}</h1>
+
+            <Form.Group className="bioEditor mb-2" controlId="profile-bio">
                 <Form.Control
                     as="textarea"
-                    rows={4}
+                    rows={3}
                     maxLength={1000}
+                    placeholder="Write a short bio..."
                     value={bio}
                     onChange={e => setBio(e.target.value)}
                 />
                 <Form.Text muted>{bio.length}/1000</Form.Text>
             </Form.Group>
 
-            {message && <Alert variant={message.variant} className="py-1 px-2 small">{message.text}</Alert>}
-            <Button type="submit" variant="secondary" className="w-100" disabled={!changed || saving}>
+            <Form.Group className="bioEditor mb-2" controlId="profile-avatar">
+                <Form.Label className="small mb-1">Profile picture URL</Form.Label>
+                <Form.Control
+                    type="url"
+                    size="sm"
+                    placeholder="https://..."
+                    value={avatarUrl}
+                    onChange={e => setAvatarUrl(e.target.value)}
+                />
+            </Form.Group>
+
+            {message && <Alert variant={message.variant} className="bioEditor py-1 px-2 small">{message.text}</Alert>}
+            <Button type="submit" variant="secondary" disabled={!changed || saving}>
                 {saving ? "Saving..." : "Save profile"}
             </Button>
         </Form>
+        </>
     );
 }
 export default ProfileEditor;

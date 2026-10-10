@@ -4,13 +4,11 @@ import { useState, useEffect } from "react";
 import WidgetDisplay from "./pfolioComponents/widgetDisplay.jsx";
 import "./portfolio.css"
 import PFolioNavBar from './pfolioComponents/navbar.jsx';
-import UserInfo from './pfolioComponents/userInfo.jsx';
 import usePortfolio from './pfolioComponents/usePortfolio.js';
-import EditSidebar from './pfolioComponents/editSidebar.jsx';
+import ProfileBanner from './pfolioComponents/profileBanner.jsx';
 import PostGrid from './pfolioComponents/postGrid.jsx';
 import PostFormModal from './pfolioComponents/postFormModal.jsx';
 import defaultPfp from './assets/stockPhotoGuy.png';
-import FileUpload from './pfolioComponents/fileUpload.jsx';
 import UploadFileModal from './pfolioComponents/uploadFileModal.jsx';
 import PostDetailModal from './pfolioComponents/postDetailModal.jsx';
 
@@ -44,21 +42,17 @@ function UserPortfolio(){
     return (
         <>
             <PFolioNavBar uid={uid}></PFolioNavBar>
-            <div className='columnContainer'>
-                <div className='infoEditContainer'>
-                <UserInfo img={profile?.avatarUrl || defaultPfp} txt={profile?.bio || "No bio yet."}></UserInfo>
-                {isOwner && (
-                    <EditSidebar
-                        postCount={posts.length}
-                        editMode={editMode}
-                        onToggleEditMode={() => setEditMode(m => !m)}
-                        onNewPost={() => setModal({ post: null })}
-                        profile={profile}
-                        onSaveProfile={saveProfile}
-                    />
-                )}
-                {isOwner && (<FileUpload onOpen={() => setFileModal(true)} />)}
-                </div>
+            <div className='portfolioPage'>
+                <ProfileBanner
+                    profile={profile}
+                    defaultPfp={defaultPfp}
+                    isOwner={isOwner}
+                    editMode={editMode}
+                    onSetEditMode={setEditMode}
+                    onNewPost={() => setModal({ post: null })}
+                    onManageImages={() => setFileModal(true)}
+                    onSaveProfile={saveProfile}
+                />
                 <div className='postContainer'>
                     <PostGrid
                         posts={posts}

@@ -1,18 +1,14 @@
 
 function UserInfo(props){
-    //pfp and user bio
-    const pfpStyle = {
-    width: '200px',
-    height: '200px',
-    borderRadius: '50%',
-
-  };
+    //pfp, username and user bio
     return(
         <>
-        <div>
-        <img src={props.img} alt="Image not found" style={pfpStyle}>
-        </img>
-        <p>{props.txt}</p>
+        <div className="avatarWrap">
+            <img src={props.img} alt="Image not found" className="avatar"></img>
+        </div>
+        <div className="profileText">
+            <h1 className="profileName">{props.username}</h1>
+            <p className="profileBio">{props.txt}</p>
         </div>
         </>
     )

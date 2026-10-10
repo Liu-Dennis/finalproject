@@ -1,27 +1,101 @@
-/* SplitPage.css */
-.columnContainer {
-  display: flex;
+/* Portfolio page: profile banner on top, post grid below */
+.portfolioPage {
   width: 100%;
-  min-height: 100vh; /* Takes full page height */
+  min-height: 100vh;
 }
 
-.infoEditContainer, .postContainer {
-  padding: 20px;
+.profileBanner {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  padding: 28px 32px;
+  border-bottom: 2px solid #dee2e6;
 }
 
-.infoEditContainer {
-  background-color: #f0f2f5;
-  width: 25%;
+.avatarWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #dee2e6;
+  display: block;
+}
+
+/* "Change photo" overlay, only rendered in edit mode */
+.avatarChange {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #ffffff;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.profileText {
+  flex: 1;
+  min-width: 0;
+}
+
+.profileName {
+  font-size: 40px;
+  font-weight: 600;
+  margin: 8px 0 12px;
+  overflow-wrap: anywhere;
+}
+
+.profileBio {
+  font-size: 16px;
+  color: #495057;
+  max-width: 640px;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.bioEditor {
+  max-width: 640px;
+}
+
+.ownerActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 200px;
+  flex-shrink: 0;
 }
 
 .postContainer {
-  background-color: #ffffff;
-  width: 75%;
+  margin: 24px 32px;
+  padding: 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  min-height: 400px;
 }
 
-/* Responsive: Stacks vertically on smaller screens */
-@media (max-width: 768px) {
-  .columnContainer {
+/* Responsive: stack the banner and center it on phones */
+@media (max-width: 640px) {
+  .profileBanner {
     flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px 16px;
+  }
+  .profileBio, .bioEditor {
+    margin: 0 auto;
+  }
+  .ownerActions {
+    width: 100%;
+  }
+  .postContainer {
+    margin: 16px;
+    padding: 12px;
   }
 }
